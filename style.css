@@ -1,0 +1,65 @@
+body {
+    margin: 3em;
+}
+
+img {
+    width: 400px;
+    height: 210px;
+    margin: 1em;
+}
+
+img:nth-of-type(1):hover {
+    filter: blur(4px) hue-rotate(90deg);
+}
+
+
+img:nth-of-type(2):hover {
+    filter: opacity(40%);
+}
+
+
+img:nth-of-type(3):hover {
+    filter: brightness(60%);
+}
+
+img:nth-of-type(4):hover {
+    mask-image: linear-gradient(rgb(201, 42, 42), transparent);
+}
+
+img:nth-of-type(5):hover {
+    clip-path: circle(50% at right);
+}
+
+.halftone {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.halftone img {
+    display: block;
+}
+
+.halftone::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(14px at 40% 60%, #000, #fff);
+    background-size: 30px 30px;
+    mix-blend-mode: screen;
+}
+
+.halftone:hover{
+    filter: contrast(1); /* verwijdert threshold */
+  }
+  
+.halftone:hover::after{
+    opacity: 0; /* verberg de dots */
+  }
+  
+
+.container {
+    mask-image: url("https://mdn.github.io/shared-assets/images/examples/mask-star.svg");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+}
