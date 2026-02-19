@@ -30,3 +30,11 @@ Ik heb geoefend met:
 - Basis mask properties
 - Combineren van masks met afbeeldingen
 - Het gebruiken van masks voor creatieve visuele effecten
+
+- ## Wat ik vandaag heb gedaan
+
+- Begonnen met de presentatie waar we gisteren aan hebben gewerkt. Hierbij heb ik verschillende CSS-functies geleerd en toegepast.
+- Deelgenomen aan de kickstart van de CSS, waarin werd uitgelegd wat er van ons verwacht wordt.
+- Onderzoek gedaan naar wat ik kan maken en wat ik leuk vind om te ontwikkelen.
+- Een eerste snelle template gemaakt van wat ik verwacht te gaan maken.
+
