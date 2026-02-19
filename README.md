@@ -38,3 +38,30 @@ Ik heb geoefend met:
 - Onderzoek gedaan naar wat ik kan maken en wat ik leuk vind om te ontwikkelen.
 - Een eerste snelle template gemaakt van wat ik verwacht te gaan maken.
 
+## Weekly Nerd – Peter Paul Koch (Browsers)
+
+Tijdens de Weekly Nerd kwam Peter Paul Koch langs en vertelde hij over hoe browsers werken en hoe ze door de jaren heen zijn ontwikkeld. Ik heb tijdens het college tekeningen gemaakt om het beter te begrijpen.
+
+### Wat doet een browser?
+Een browser haalt de code op van een website: HTML, CSS en JavaScript.  
+- HTML is de markup en bepaalt de structuur van de pagina.  
+- CSS zorgt voor de styling.  
+- JavaScript zorgt voor interactie.  
+
+Vanuit de HTML wordt de DOM (Document Object Model) gemaakt. Dit is een model van de HTML dat JavaScript kan gebruiken om onderdelen van de pagina aan te passen. Daarnaast bestaat er ook de AOM (Accessibility Object Model), die lijkt op de DOM maar gericht is op toegankelijkheid en specifieke interface-instructies.
+
+### Parsing en rendering
+Een parser leest de HTML als tekst en vertaalt dit naar instructies die de browser begrijpt. De JavaScript engine voert de scripts uit, maar is niet verantwoordelijk voor het parsen en renderen van HTML en CSS of voor het bouwen van de DOM; dat doet de browser zelf.
+
+We hebben ook geleerd dat CSS en layout het zwaarste zijn voor de browser om te berekenen. JavaScript kan het renderen blokkeren, behalve wanneer je `async` of `defer` gebruikt.
+
+### Core vs DOM
+- Core: de JavaScript programmeertaal zelf.  
+- DOM: de manier waarop JavaScript de HTML-pagina kan aanspreken en aanpassen.
+
+### Backward compatibility
+Browsers moeten alles wat ze ooit hebben ondersteund blijven ondersteunen. Daarom werken oude dingen zoals:
+```html
+<body bgcolor="abdaca">
+<frameset>
+
