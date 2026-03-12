@@ -65,17 +65,19 @@ body:has(header input:checked) {
 
 
 Header {
-  background: red;
+  background: rgb(243, 20, 76);
+
   width: 90%;
   rotate: 20deg;
   position:absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  top:40px;
+  top:80px;
   left:75%;
   transform:translateX(-50%);
   z-index:10;
+
 
 
   --s: 200px; /* adjust to control the size */
@@ -129,6 +131,7 @@ main {
   min-height: 50em;
   display: grid;
   place-items: center;
+  padding-top: 50px;
 }
 
 /* de body van de tama */
