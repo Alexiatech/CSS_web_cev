@@ -146,6 +146,9 @@ main>section:first-of-type {
 
 main>section {
   width: 60%;
+  box-shadow:
+    inset 2px -6px  10px #464629,
+    0 4px 0 #3d0707;
 }
 
 
@@ -196,6 +199,12 @@ main section:nth-of-type(2) input {
 
 main:has(input:nth-last-child(1):checked) section div::before {
   display: block;  
+
+  animation-name: --wink;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: steps(5);
+
 }
 
 
@@ -262,10 +271,6 @@ section div::after {
   display: none;
 }
 
-main:not(:has(input[type="checkbox"]:checked)) section div::before,
-main:not(:has(input[type="checkbox"]:checked)) section div::after {
-  display: none;
-}
 
 
 
@@ -476,6 +481,12 @@ main:not(:has(input[type="checkbox"]:checked)) section div::after {
       }
 /* radio buttons  */
 
+main:not(:has(input[type="checkbox"]:checked)) section div::before,
+main:not(:has(input[type="checkbox"]:checked)) section div::after {
+  display: none;
+}
+
+
 section input[type="radio"]{
   appearance: none;
   width: 60px;
@@ -485,6 +496,7 @@ section input[type="radio"]{
   border-radius: 50%;
   cursor: pointer;
 }
+
 
 section input[type="radio"]:hover{
   appearance: none;
@@ -502,10 +514,10 @@ section input:nth-child(1)[type="radio"]:checked ~ section div::before{
   animation-timing-function: steps(5);
 }
 
-main > section:first-of-type > input:nth-child(2):checked 
-~ section:first-of-type {
-  animation: --shake 0.3s linear 10;
+main > section:first-of-type:has(input:nth-child(2):checked) {
+  animation: --shake 0.3s linear 5;
 }
+
 
 section input:nth-child(2)[type="radio"]:checked ~ section div::before{
 
@@ -524,8 +536,6 @@ section input:nth-child(3)[type="radio"]:checked ~ section div::before{
 
 main > section:first-of-type > input:nth-child(4):checked 
 ~ section:first-of-type div::before {
-
- 
 
   animation-name: --party;
   animation-duration: 0.6s;
@@ -547,9 +557,17 @@ main > section:first-of-type > input[type="radio"]:nth-child(4):checked
 
 @media (max-width: 700px) {
 
-  header{
-    margin-top: 1em;
-    text-align:center;
+  header {
+    position: static;
+    justify-content: center;
+    border: none;
+    background: none;
+    rotate: none;
+  }
+
+  header input{
+    display: flex;
+    justify-items: center;
   }
 
   main{
@@ -588,11 +606,6 @@ main > section:first-of-type > input[type="radio"]:nth-child(4):checked
   main section:nth-of-type(2) input{
     width:48px;
     height:48px;
-  }
-
-  header input{
-    width:32px;
-    height:32px;
   }
 
   /* pixel grootte kleiner */
