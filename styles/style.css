@@ -19,6 +19,7 @@
   --hue-third-color: 8;
   --hue-fourth-color: 165;
   --hue-fifth-color: 75;
+  --hue-zes-color: 30;
 
 
 }
@@ -51,7 +52,6 @@ body {
       74%);
 
   padding: 0;
-  margin: 0;
   font-family: 'W95FA', 'Microsoft Sans Serif',
 }
 
@@ -60,18 +60,69 @@ body:has(header input:checked) {
   --hue: var(--random);
   transition: 0.2s all ease-out;
 
-
 }
+
+
 
 Header {
-  margin-top: 3em;
-  justify-items: left;
-  padding: 20px;
+  background: red;
+  width: 90%;
+  rotate: 20deg;
+  position:absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top:40px;
+  left:75%;
+  transform:translateX(-50%);
+  z-index:10;
+
+
+  --s: 200px; /* adjust to control the size */
+
+  width: var(--s); 
+  aspect-ratio: 1;
+  --g:/calc(var(--s)*0.214) calc(var(--s)*0.214) radial-gradient(50% 50%,#000 99%,#0000 101%) no-repeat;
+  mask: calc(50% + var(--s)*0.349) calc(50% + var(--s)*0.093) var(--g),calc(50% + var(--s)*0.181) calc(50% + var(--s)*0.312) var(--g),calc(50% + var(--s)*-0.093) calc(50% + var(--s)*0.349) var(--g),calc(50% + var(--s)*-0.312) calc(50% + var(--s)*0.181) var(--g),calc(50% + var(--s)*-0.349) calc(50% + var(--s)*-0.093) var(--g),calc(50% + var(--s)*-0.181) calc(50% + var(--s)*-0.312) var(--g),calc(50% + var(--s)*0.093) calc(50% + var(--s)*-0.349) var(--g),calc(50% + var(--s)*0.312) calc(50% + var(--s)*-0.181) var(--g),radial-gradient(calc(var(--s)*0.421),#000 99%,#0000 101%) subtract,calc(50% + var(--s)*0.395) calc(50% + var(--s)*0.302) var(--g),calc(50% + var(--s)*0.066) calc(50% + var(--s)*0.493) var(--g),calc(50% + var(--s)*-0.302) calc(50% + var(--s)*0.395) var(--g),calc(50% + var(--s)*-0.493) calc(50% + var(--s)*0.066) var(--g),calc(50% + var(--s)*-0.395) calc(50% + var(--s)*-0.302) var(--g),calc(50% + var(--s)*-0.066) calc(50% + var(--s)*-0.493) var(--g),calc(50% + var(--s)*0.302) calc(50% + var(--s)*-0.395) var(--g),calc(50% + var(--s)*0.493) calc(50% + var(--s)*-0.066) var(--g);
+
 }
 
-header input {
-  width: 40px;
-  height: 40px;
+
+
+
+
+header label{
+  font-family: "Comic Sans MS", "Arial Rounded MT Bold", Arial;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  font-weight:bold;
+  
+}
+
+
+
+
+input{
+  appearance: none;
+  width: 60px;
+  height: 60px;
+  background: #d62828;
+  border-radius: 50%;
+  border: 6px solid #7a0d0d;
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 -6px 0 #7a0d0d,
+    0 4px 0 #3d0707;
+
+  transition: transform 0.1s;
+}
+
+input:active{
+  transform: translateY(3px);
+ 
 }
 
 main {
@@ -88,7 +139,6 @@ main>section:first-of-type {
   padding: 20px;
   border-radius: 30px;
   background: hsl(calc(var(--hue, var(--hue-first-color)) + 20), 89%, 67%);
-  border: 7em var(--fith-color);
 
 }
 
@@ -119,37 +169,48 @@ main>section>section:nth-of-type(2) {
   gap: 10px;
 }
 
+
 /*                                   */
 /* Buttons styling en animatie */
 /*                                        */
 
 
 
-main input {
-  width: 50px;
+main section:nth-of-type(2) input {
+  width: 60px;
+  height: 60px;
+  appearance: none;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 6px solid black;
+  background: #444;
+  position: relative;
+  cursor: pointer;
+}
+
+ main input[type="checkbox"]:checked{
+  background: #28c840;
+  border-color: #0a5f1a;
+}
+
+main:has(input:nth-last-child(1):checked) section div::before {
+  display: block;  
 }
 
 
 
-/* power & volume (4e section) */
-main>section>section:nth-of-type(3) {
-  display: grid;
-  gap: 10px;
+
+
+
+label{
+  display:flex;
+  align-items:center;
+  gap:20px;
 }
 
-label {
-  gap: 6px;
-  font-size: 16px;
-}
 
-input {
-  size: 3em;
-  ;
-}
 
-input[type=range] {
-  width: 200px;
-}
 
 
 /* Pixel art beeldscherm */
@@ -160,13 +221,10 @@ section div {
   height: calc(12 * var(--p));
   margin: 0;
   position: relative;
-}
-
-section div {
-  position: relative;
-  cursor: pointer;
 
 }
+
+
 
 section div::before {
   content: "";
@@ -191,22 +249,22 @@ section div::before {
    
   
   display: none;
-
-  animation-name: --;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  Animation-timing-function: steps(3);
+  
 }
 
-section input[type="radio"]:first-of-type:checked ~ div::before{
-  animation-name: --wink;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  animation-timing-function: steps(3);
+section div::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--p);
+  height: var(--p);
+  display: none;
 }
 
-section input [type="radio"]:nth-of-type(2):checked {
-  animation: --sad 0.3s ease;
+main:not(:has(input[type="checkbox"]:checked)) section div::before,
+main:not(:has(input[type="checkbox"]:checked)) section div::after {
+  display: none;
 }
 
 
@@ -232,52 +290,27 @@ section input [type="radio"]:nth-of-type(2):checked {
 }
 
 @keyframes --sad {
-  0% {
-    box-shadow:
-    calc(4 * var(--p)) calc(3 * var(--p)) black,
-    calc(4 * var(--p)) calc(2 * var(--p)) black,
-    calc(8 * var(--p)) calc(3 * var(--p)) black,
-    calc(8 * var(--p)) calc(2 * var(--p)) black,
-      calc(3 * var(--p)) calc(8 * var(--p)) black,
-      calc(4 * var(--p)) calc(9 * var(--p)) black,
-      calc(5 * var(--p)) calc(10 * var(--p)) black,
-      calc(6 * var(--p)) calc(10 * var(--p)) black,
-      calc(7 * var(--p)) calc(10 * var(--p)) black,
-      calc(8 * var(--p)) calc(9 * var(--p)) black,
-      calc(9 * var(--p)) calc(8 * var(--p)) black;
-  }
-
   100% {
     box-shadow:
     calc(4 * var(--p)) calc(3 * var(--p)) black,
     calc(4 * var(--p)) calc(2 * var(--p)) black,
     calc(8 * var(--p)) calc(3 * var(--p)) black,
     calc(8 * var(--p)) calc(2 * var(--p)) black,
-      calc(3 * var(--p)) calc(14 * var(--p)) black,
-      calc(4 * var(--p)) calc(12 * var(--p)) black,
+      calc(3 * var(--p)) calc(12 * var(--p)) black,
+      calc(4 * var(--p)) calc(11 * var(--p)) black,
       calc(5 * var(--p)) calc(10 * var(--p)) black,
       calc(6 * var(--p)) calc(10 * var(--p)) black,
       calc(7 * var(--p)) calc(10 * var(--p)) black,
-      calc(8 * var(--p)) calc(12 * var(--p)) black,
-      calc(9 * var(--p)) calc(14 * var(--p)) black;
+      calc(8 * var(--p)) calc(11 * var(--p)) black,
+      calc(9 * var(--p)) calc(12* var(--p)) black;
   }
       
   }
 
 
+
+
   @keyframes --mad {
-    0% {
-      box-shadow:
-        calc(4 * var(--p)) calc(3 * var(--p)) black,
-        calc(8 * var(--p)) calc(3 * var(--p)) black,
-        calc(3 * var(--p)) calc(8 * var(--p)) black,
-        calc(4 * var(--p)) calc(9 * var(--p)) black,
-        calc(5 * var(--p)) calc(10 * var(--p)) black,
-        calc(6 * var(--p)) calc(10 * var(--p)) black,
-        calc(7 * var(--p)) calc(10 * var(--p)) black,
-        calc(8 * var(--p)) calc(9 * var(--p)) black,
-        calc(9 * var(--p)) calc(8 * var(--p)) black;
-    }
   
     100% {
       box-shadow:
@@ -305,10 +338,142 @@ section input [type="radio"]:nth-of-type(2):checked {
         
     }
 
-main:has(input:checked) section div::before {
-  display: block;
-}
+    @keyframes --shake {
+      0%   { transform: translateX(0); }
+      10%  { transform: translateX(-5px); }
+      20%  { transform: translateX(5px); }
+      30%  { transform: translateX(-5px); }
+      40%  { transform: translateX(5px); }
+      50%  { transform: translateX(-5px); }
+      60%  { transform: translateX(5px); }
+      70%  { transform: translateX(-5px); }
+      80%  { transform: translateX(5px); }
+      90%  { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
 
+    @keyframes --party {
+        0% {
+          box-shadow:
+          
+            calc(3 * var(--p)) calc(0 * var(--p)) black,
+            calc(4 * var(--p)) calc(0 * var(--p)) black,
+            calc(5 * var(--p)) calc(0 * var(--p)) black,
+            calc(6 * var(--p)) calc(0 * var(--p)) black,
+            calc(7 * var(--p)) calc(0 * var(--p)) black,
+            calc(8 * var(--p)) calc(0 * var(--p)) black,
+            calc(2 * var(--p)) calc(1 * var(--p)) black,
+            calc(3 * var(--p)) calc(1 * var(--p)) black,
+            calc(4 * var(--p)) calc(1 * var(--p)) black,
+            calc(5 * var(--p)) calc(1 * var(--p)) black,
+            calc(6 * var(--p)) calc(1 * var(--p)) black,
+            calc(7 * var(--p)) calc(1 * var(--p)) black,
+            calc(8 * var(--p)) calc(1 * var(--p)) black,
+            calc(9 * var(--p)) calc(1 * var(--p)) black,
+      
+            calc(4 * var(--p)) calc(3 * var(--p)) black,
+            calc(4 * var(--p)) calc(4 * var(--p)) black,
+            calc(8 * var(--p)) calc(3 * var(--p)) black,
+            calc(8 * var(--p)) calc(4 * var(--p)) black,
+      
+            calc(3 * var(--p)) calc(8 * var(--p)) black,
+            calc(4 * var(--p)) calc(9 * var(--p)) black,
+            calc(5 * var(--p)) calc(10 * var(--p)) black,
+            calc(6 * var(--p)) calc(10 * var(--p)) black,
+            calc(7 * var(--p)) calc(10 * var(--p)) black,
+            calc(8 * var(--p)) calc(9 * var(--p)) black,
+            calc(9 * var(--p)) calc(8 * var(--p)) black;
+        }
+      
+        50% {
+          box-shadow:
+          
+            calc(4 * var(--p)) calc(-1 * var(--p)) black,
+            calc(5 * var(--p)) calc(-1 * var(--p)) black,
+            calc(6 * var(--p)) calc(-1 * var(--p)) black,
+            calc(7 * var(--p)) calc(-1 * var(--p)) black,
+            calc(8 * var(--p)) calc(-1 * var(--p)) black,
+            calc(9 * var(--p)) calc(-1 * var(--p)) black,
+            calc(3 * var(--p)) calc(0 * var(--p)) black,
+            calc(4 * var(--p)) calc(0 * var(--p)) black,
+            calc(5 * var(--p)) calc(0 * var(--p)) black,
+            calc(6 * var(--p)) calc(0 * var(--p)) black,
+            calc(7 * var(--p)) calc(0 * var(--p)) black,
+            calc(8 * var(--p)) calc(0 * var(--p)) black,
+            calc(9 * var(--p)) calc(0 * var(--p)) black,
+            calc(10 * var(--p)) calc(0 * var(--p)) black,
+      
+         
+            calc(4 * var(--p)) calc(4 * var(--p)) black,
+            calc(5 * var(--p)) calc(4 * var(--p)) black,
+            calc(8 * var(--p)) calc(4 * var(--p)) black,
+            calc(9 * var(--p)) calc(4 * var(--p)) black,
+      
+       
+            calc(4 * var(--p)) calc(9 * var(--p)) black,
+            calc(5 * var(--p)) calc(10 * var(--p)) black,
+            calc(6 * var(--p)) calc(10 * var(--p)) black,
+            calc(7 * var(--p)) calc(10 * var(--p)) black,
+            calc(8 * var(--p)) calc(9 * var(--p)) black;
+        }
+      
+        100% {
+          box-shadow:
+            calc(3 * var(--p)) calc(0 * var(--p)) black,
+            calc(4 * var(--p)) calc(0 * var(--p)) black,
+            calc(5 * var(--p)) calc(0 * var(--p)) black,
+            calc(6 * var(--p)) calc(0 * var(--p)) black,
+            calc(7 * var(--p)) calc(0 * var(--p)) black,
+            calc(8 * var(--p)) calc(0 * var(--p)) black,
+            calc(2 * var(--p)) calc(1 * var(--p)) black,
+            calc(3 * var(--p)) calc(1 * var(--p)) black,
+            calc(4 * var(--p)) calc(1 * var(--p)) black,
+            calc(5 * var(--p)) calc(1 * var(--p)) black,
+            calc(6 * var(--p)) calc(1 * var(--p)) black,
+            calc(7 * var(--p)) calc(1 * var(--p)) black,
+            calc(8 * var(--p)) calc(1 * var(--p)) black,
+            calc(9 * var(--p)) calc(1 * var(--p)) black,
+      
+        
+            calc(4 * var(--p)) calc(3 * var(--p)) black,
+            calc(4 * var(--p)) calc(4 * var(--p)) black,
+            calc(8 * var(--p)) calc(3 * var(--p)) black,
+            calc(8 * var(--p)) calc(4 * var(--p)) black,
+      
+        
+            calc(3 * var(--p)) calc(8 * var(--p)) black,
+            calc(4 * var(--p)) calc(9 * var(--p)) black,
+            calc(5 * var(--p)) calc(10 * var(--p)) black,
+            calc(6 * var(--p)) calc(10 * var(--p)) black,
+            calc(7 * var(--p)) calc(10 * var(--p)) black,
+            calc(8 * var(--p)) calc(9 * var(--p)) black,
+            calc(9 * var(--p)) calc(8 * var(--p)) black;
+        }
+      }
+
+
+      @keyframes --confettiFall {
+        0% {
+          box-shadow:
+            calc(1 * var(--p)) calc(0 * var(--p)) red,
+            calc(4 * var(--p)) calc(1 * var(--p)) yellow,
+            calc(7 * var(--p)) calc(0 * var(--p)) blue,
+            calc(10 * var(--p)) calc(1 * var(--p)) lime,
+            calc(3 * var(--p)) calc(2 * var(--p)) hotpink,
+            calc(8 * var(--p)) calc(2 * var(--p)) orange;
+        }
+      
+      
+        100% {
+          box-shadow:
+            calc(1 * var(--p)) calc(8 * var(--p)) red,
+            calc(4 * var(--p)) calc(9 * var(--p)) yellow,
+            calc(7 * var(--p)) calc(8 * var(--p)) blue,
+            calc(10 * var(--p)) calc(9 * var(--p)) lime,
+            calc(3 * var(--p)) calc(10 * var(--p)) hotpink,
+            calc(8 * var(--p)) calc(10 * var(--p)) orange;
+        }
+      }
 /* radio buttons  */
 
 section input[type="radio"]{
@@ -330,12 +495,109 @@ section input[type="radio"]:hover{
   transition: 0.1s all ease-in;
 }
 
-section input[type="radio"]:checked{
-  appearance: none;
-  background: hsl(calc(var(--hue, var(--hue-first-color)) + 90), 89%, 67%);
-  border-radius: 50%;
-  cursor: pointer;
+section input:nth-child(1)[type="radio"]:checked ~ section div::before{
+  animation-name: --sad;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: steps(5);
+}
+
+main > section:first-of-type > input:nth-child(2):checked 
+~ section:first-of-type {
+  animation: --shake 0.3s linear 10;
+}
+
+section input:nth-child(2)[type="radio"]:checked ~ section div::before{
+
+  animation-name: --mad;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: steps(1);
+}
+
+section input:nth-child(3)[type="radio"]:checked ~ section div::before{
+  animation-name: --wink;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: steps(3);
+}
+
+main > section:first-of-type > input:nth-child(4):checked 
+~ section:first-of-type div::before {
+
+ 
+
+  animation-name: --party;
+  animation-duration: 0.6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: steps(1);
+}
+
+body:has(header input:checked)
+main > section:first-of-type > input[type="radio"]:nth-child(4):checked
+~ section:first-of-type div::after {
+  display: block;
+  animation-name: --confettiFall ;
+  animation-duration: 0.6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: steps(6);
 }
 
 
 
+@media (max-width: 700px) {
+
+  header{
+    margin-top: 1em;
+    text-align:center;
+  }
+
+  main{
+    min-height: 100vh;
+    padding: 1em;
+    align-content:start;
+  }
+
+  main > section{
+    width:100%;
+  }
+
+  main > section:first-of-type{
+    max-width:100%;
+    padding:16px;
+    border-radius:24px;
+    border-width:2em;
+  }
+
+  main > section > section:nth-of-type(1){
+    padding:2em;
+    margin:1em;
+  }
+
+  /* radio buttons rij */
+  main > section > section:nth-of-type(2){
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+  }
+
+  section input[type="radio"]{
+    width:48px;
+    height:48px;
+  }
+
+  main section:nth-of-type(2) input{
+    width:48px;
+    height:48px;
+  }
+
+  header input{
+    width:32px;
+    height:32px;
+  }
+
+  /* pixel grootte kleiner */
+  section div{
+    --p:12px;
+  }
+
+}
