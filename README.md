@@ -65,3 +65,23 @@ Browsers moeten alles wat ze ooit hebben ondersteund blijven ondersteunen. Daaro
 <body bgcolor="abdaca">
 <frameset>
 
+# Dag 2 – Ideeontwikkeling
+
+Vandaag ben ik verder gegaan met het bedenken van een concept voor mijn CSS project.
+
+Ik wilde iets maken dat zowel interactief als visueel interessant is. Uiteindelijk kwam ik op het idee om een **Tamagotchi-achtig apparaat** te maken dat volledig met CSS werkt.
+
+Het idee was dat de gebruiker via knoppen verschillende emoties van het karakter kan activeren.
+
+Ik heb onderzocht:
+
+- Hoe interactieve states werken in CSS
+- Hoe ik zonder JavaScript toch interactie kan maken
+- Hoe CSS selectors zoals `:checked` en `:has()` werken
+
+### Eerste experiment
+
+```css
+input[type="radio"]:checked {
+  background: red;
+}
