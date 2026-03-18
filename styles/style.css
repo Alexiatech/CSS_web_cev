@@ -1,7 +1,13 @@
 /* =========================================================
 MARK: 1. FOUNDATION / BASIS
-Hier staan de globale variabelen, font import en custom property
-voor de random kleuranimatie.
+Hier gebruik ik CSS custom properties (variables) voor kleuren,
+schaal en herbruikbare styling.
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
+https://developer.mozilla.org/en-US/docs/Web/CSS/clamp
+
+Ik gebruik clamp() om elementen mee te laten schalen met het scherm.
 ========================================================= */
 
 :root {
@@ -41,15 +47,29 @@ voor de random kleuranimatie.
 /* Laat de custom property van 0 naar 360 lopen
    zodat deze gebruikt kan worden voor kleurverandering */
 @keyframes random {
-  from { --random: 0; }
-  to { --random: 360; }
+  from {
+    --random: 0;
+  }
+
+  to {
+    --random: 360;
+  }
 }
 
 
 /* =========================================================
-MARK: 2. PAGINA / GLOBALE LAYOUT
-Algemene body-styling en globale state-logica via :has().
-Hier wordt ook de "special mode" geactiveerd via de header checkbox.
+MARK: 2. GLOBALE STATE MET :has()
+
+Hier gebruik ik :has() om de hele pagina te laten reageren
+op interactie (zoals de header checkbox).
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/:has
+https://css-tricks.com/the-css-has-selector/
+
+Ik gebruik dit om:
+- modes te veranderen (sleepy, wild, cute)
+- animaties te triggeren zonder JavaScript
 ========================================================= */
 
 body {
@@ -71,9 +91,8 @@ body {
      toon confetti op het gezicht */
   &:has(header input:checked) {
     main {
-      > section:first-of-type {
-        > input[type="radio"]:nth-child(4):checked
-        ~ section:first-of-type div::after {
+      >section:first-of-type {
+        >input[type="radio"]:nth-child(4):checked~section:first-of-type div::after {
           display: block;
           animation-name: --confettiFall;
           animation-duration: 0.6s;
@@ -85,29 +104,36 @@ body {
   }
 
   /* Als header-checkbox aan staat:
-     verander de labels van de moods naar alternatieve namen */
+     verander de labels van de moods naar alternatieve namen 
+   Labels veranderen dynamisch via pseudo-elements (::before) 
+   Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/::before
+https://developer.mozilla.org/en-US/docs/Web/CSS/content
+
+Gebruikt om tekst visueel te vervangen zonder HTML aan te passen. */
+
   &:has(header input:checked) {
-    main > section:first-of-type {
-      > label {
+    main>section:first-of-type {
+      >label {
         font-size: 0;
       }
 
-      > label:nth-of-type(1)::before {
+      >label:nth-of-type(1)::before {
         content: "Sleepy";
         font-size: 1rem;
       }
 
-      > label:nth-of-type(2)::before {
+      >label:nth-of-type(2)::before {
         content: "Wild";
         font-size: 1rem;
       }
 
-      > label:nth-of-type(3)::before {
+      >label:nth-of-type(3)::before {
         content: "Cute";
         font-size: 1rem;
       }
 
-      > label:nth-of-type(4)::before {
+      >label:nth-of-type(4)::before {
         content: "Disco";
         font-size: 1rem;
       }
@@ -117,8 +143,8 @@ body {
   /* Als header-checkbox aan staat:
      geef de vier mood-buttons een extra bewegende animatie */
   &:has(header input:checked) {
-    main > section:first-of-type {
-      > input[type="radio"] {
+    main>section:first-of-type {
+      >input[type="radio"] {
         animation: wiggle .6s ease-in-out infinite;
       }
     }
@@ -129,19 +155,19 @@ body {
      shaken -> wild
      blij -> cute */
   &:has(header input:checked) {
-    input[value="verdrietig"]:checked ~ section div::before {
+    input[value="verdrietig"]:checked~section div::before {
       animation:
         --sleep-eyes .4s steps(1) forwards,
         --sleep-breathe 2.4s steps(2) .4s infinite;
     }
 
-    input[value="shaken"]:checked ~ section div::before {
+    input[value="shaken"]:checked~section div::before {
       animation:
         --wild-face .2s steps(1) forwards,
         --wild-move .4s steps(2) .2s infinite;
     }
 
-    input[value="blij"]:checked ~ section div::before {
+    input[value="blij"]:checked~section div::before {
       animation:
         --cute-face .2s steps(1) forwards,
         --cute-pulse .4s steps(2) .2s infinite;
@@ -151,14 +177,24 @@ body {
 
 
 /* =========================================================
-MARK: 3. POWER / CONTAINER STYLE QUERY
-De game-container krijgt een custom property --power.
-Met de power-checkbox wordt die van off naar on gezet.
-Daarna bepaalt een style query of het gezicht zichtbaar is.
-Bron: moderne CSS techniek / style queries
+MARK: 3. CONTAINER QUERY / POWER STATE
+
+Hier gebruik ik een container query met een custom property (--power)
+om het scherm aan/uit te zetten.
+
+Bron:
+https://developer.mozilla.org/en-US/blog/getting-started-with-css-container-queries/
+https://developer.mozilla.org/en-US/docs/Web/CSS/@container
+
+Ik gebruik:
+- container-name
+- container-type
+- style queries
+
+Om gedrag van elementen te veranderen zonder media queries.
 ========================================================= */
 
-main > section:first-of-type {
+main>section:first-of-type {
   container-type: inline-size;
   container-name: game;
   --power: off;
@@ -195,7 +231,13 @@ section:has(input[value="power"]:checked) {
 /* =========================================================
 MARK: 4. INPUTS EN LABELS
 Standaard styling voor knoppen en labels.
-========================================================= */
+Styling van custom radio buttons.
+
+Bron:
+https://css-tricks.com/form-validation-ux-html-css/
+https://developer.mozilla.org/en-US/docs/Web/CSS/appearance
+
+appearance: none wordt gebruikt om default browser styling te verwijderen. */
 
 input {
   appearance: none;
@@ -227,7 +269,13 @@ label {
 MARK: 5. HEADER / SPECIAL MODE BUTTON
 De header is vormgegeven als opvallende decoratieve knop
 die de alternatieve mode activeert.
-========================================================= */
+
+De bloemvorm van de header is gemaakt met CSS mask.
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/mask
+https://www.matuzo.at/blog/2022/100daysof-day6/
+
+Gebaseerd op online voorbeelden en aangepast naar eigen design. */
 
 header {
   background: rgb(243, 20, 76);
@@ -248,10 +296,8 @@ header {
   width: var(--s);
   aspect-ratio: 1;
 
-  /* Mask-opbouw voor de bloemvormige knop
-     Bron: online / CSS shape techniek / experimenteren met masks */
-  --g: /calc(var(--s)*0.214) calc(var(--s)*0.214)
-    radial-gradient(50% 50%, #000 99%, #0000 101%) no-repeat;
+  /* Mask-opbouw voor de bloemvormige knop */
+  --g: /calc(var(--s)*0.214) calc(var(--s)*0.214) radial-gradient(50% 50%, #000 99%, #0000 101%) no-repeat;
 
   mask:
     calc(50% + var(--s)*0.349) calc(50% + var(--s)*0.093) var(--g),
@@ -284,9 +330,15 @@ header {
 
 
 /* =========================================================
-MARK: 6. MAIN / PAGINA-INHOUD
-Basis-layout van de pagina en checkbox-styling.
+MARK: 6. GAME CONTAINER / GRID LAYOUT
+
+De layout is opgebouwd met CSS Grid om knoppen, labels en display
+netjes onder elkaar te plaatsen.
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout
 ========================================================= */
+
 
 main {
   min-height: 50em;
@@ -313,7 +365,7 @@ Hier staat de opbouw van de Tamagotchi-behuizing:
 bovenaan de buttons, daaronder labels, en daarna het scherm.
 ========================================================= */
 
-main > section:first-of-type {
+main>section:first-of-type {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: .5em 1em;
@@ -329,13 +381,13 @@ main > section:first-of-type {
     0 7px 0 #3d0707;
 
   /* Plaatsing van de vier radiobuttons */
-  > input[type="radio"] {
+  >input[type="radio"] {
     grid-row: 1;
     justify-self: center;
   }
 
   /* Tekstlabels onder de radiobuttons */
-  > label {
+  >label {
     grid-row: 2;
     justify-self: center;
     display: block;
@@ -344,7 +396,7 @@ main > section:first-of-type {
   }
 
   /* Display / scherm onder de controls */
-  > section:first-of-type {
+  >section:first-of-type {
     grid-column: 1 / -1;
     grid-row: 3;
     margin-top: .5em;
@@ -360,7 +412,7 @@ main > section:first-of-type {
   }
 
   /* Schermvlak waar het gezicht in komt */
-  > section:nth-of-type(1) {
+  >section:nth-of-type(1) {
     background: grey;
     padding: calc(var(--unit) * 4);
     margin: 2em;
@@ -370,7 +422,7 @@ main > section:first-of-type {
   }
 
   /* Eventuele tweede sectie binnen de container */
-  > section:nth-of-type(2) {
+  >section:nth-of-type(2) {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     place-items: center;
@@ -380,10 +432,16 @@ main > section:first-of-type {
 
 
 /* =========================================================
-MARK: 8. PIXEL FACE DISPLAY
-Het gezicht is opgebouwd met box-shadow pixels op ::before.
-Het extra laagje ::after wordt gebruikt voor confetti.
-Bron: workshop / uitleg van Nils over box-shadow pixels
+MARK: 8. PIXEL FACE
+
+Het gezicht is opgebouwd met box-shadow om pixels na te maken.
+
+Bron:
+https://www.matuzo.at/blog/2022/100daysof-day65/
+https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow
+
+Ik gebruik meerdere shadows om een pixel-art gezicht te tekenen
+en deze te animeren. 
 ========================================================= */
 
 section div {
@@ -438,6 +496,7 @@ section input[type="radio"] {
   cursor: pointer;
 }
 
+
 section input[type="radio"]:hover {
   scale: 1.1;
   background: hsl(calc(var(--hue, var(--hue-third-color)) + 90), 59%, 67%);
@@ -450,28 +509,37 @@ MARK: 10. MOOD STATES
 Standaard moods als de speciale header-modus niet actief is.
 ========================================================= */
 
-input[value="verdrietig"]:checked ~ section div::before {
+/* Interactie via :checked en sibling selectors (~)
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
+https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator
+
+Hiermee verander ik het gezicht zonder JavaScript. */
+
+
+input[value="verdrietig"]:checked~section div::before {
   animation-name: --sad;
   animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(5);
 }
 
-input[value="shaken"]:checked ~ section div::before {
+input[value="shaken"]:checked~section div::before {
   animation-name: --mad;
   animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(1);
 }
 
-input[value="blij"]:checked ~ section div::before {
+input[value="blij"]:checked~section div::before {
   animation-name: --wink;
   animation-duration: 0.8s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(3);
 }
 
-input[value="party"]:checked ~ section div::before {
+input[value="party"]:checked~section div::before {
   animation-name: --party;
   animation-duration: 0.4s;
   animation-iteration-count: infinite;
@@ -480,8 +548,18 @@ input[value="party"]:checked ~ section div::before {
 
 
 /* =========================================================
-MARK: 11. ANIMATIONS
-Alle keyframes voor de verschillende moods en effecten.
+MARK: 10. ANIMATIONS
+
+Alle animaties zijn gemaakt met keyframes en steps().
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes
+https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function
+https://css-tricks.com/almanac/functions/s/steps/
+Workshop met Sanne. 
+
+steps() gebruik ik om een pixelachtige animatie te krijgen
+in plaats van vloeiende beweging.
 ========================================================= */
 
 /* Blij / springend gezicht
@@ -605,9 +683,17 @@ Alle keyframes voor de verschillende moods en effecten.
 
 /* Schud-animatie van de hele console */
 @keyframes --shake {
-  0%   { transform: translateX(-5px) rotate(-3deg); }
-  50%  { transform: translateX(5px) rotate(3deg); }
-  100% { transform: translateX(-5px) rotate(-3deg); }
+  0% {
+    transform: translateX(-5px) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateX(5px) rotate(3deg);
+  }
+
+  100% {
+    transform: translateX(-5px) rotate(-3deg);
+  }
 }
 
 /* Party-gezicht */
@@ -723,11 +809,25 @@ Alle keyframes voor de verschillende moods en effecten.
 
 /* Algemene knop-wobble in special mode */
 @keyframes wiggle {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-6deg) scale(1.05); }
-  50% { transform: rotate(6deg) scale(1.08); }
-  75% { transform: rotate(-4deg) scale(1.05); }
-  100% { transform: rotate(0deg) scale(1); }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: rotate(-6deg) scale(1.05);
+  }
+
+  50% {
+    transform: rotate(6deg) scale(1.08);
+  }
+
+  75% {
+    transform: rotate(-4deg) scale(1.05);
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
 }
 
 /* Sleepy: ogen sluiten */
@@ -809,9 +909,17 @@ Alle keyframes voor de verschillende moods en effecten.
 
 /* Wild: heen-en-weer beweging */
 @keyframes --wild-move {
-  0%   { transform: rotate(-6deg) translateX(-4px); }
-  50%  { transform: rotate(6deg) translateX(4px); }
-  100% { transform: rotate(-6deg) translateX(-4px); }
+  0% {
+    transform: rotate(-6deg) translateX(-4px);
+  }
+
+  50% {
+    transform: rotate(6deg) translateX(4px);
+  }
+
+  100% {
+    transform: rotate(-6deg) translateX(-4px);
+  }
 }
 
 /* Cute: schattige sogen */
@@ -853,9 +961,17 @@ Alle keyframes voor de verschillende moods en effecten.
 
 /* Cute: zacht pulseren */
 @keyframes --cute-pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.08); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 
@@ -863,6 +979,11 @@ Alle keyframes voor de verschillende moods en effecten.
 MARK: 12. RESPONSIVE
 Aanpassingen voor kleinere schermen.
 Bron: uitleg docent over responsive schalen en breakpoints
+Media queries worden gebruikt om layout aan te passen
+voor kleinere schermen.
+
+Bron:
+https://developer.mozilla.org/en-US/docs/Web/CSS/@media
 ========================================================= */
 
 /* Tussenmaat: header schuift verder naar rechts en iets kleiner */
@@ -891,14 +1012,14 @@ Bron: uitleg docent over responsive schalen en breakpoints
     align-content: start;
   }
 
-  main > section:first-of-type {
+  main>section:first-of-type {
     width: 100%;
     max-width: 100%;
     gap: .5rem;
     padding: 1rem;
   }
 
-  main > section:first-of-type > section:first-of-type {
+  main>section:first-of-type>section:first-of-type {
     padding: 2rem;
     margin: 1rem 0;
   }
