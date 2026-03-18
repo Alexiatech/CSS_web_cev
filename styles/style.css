@@ -1,291 +1,410 @@
+/* =========================================================
+MARK: 1. FOUNDATION / BASIS
+Hier staan de globale variabelen, font import en custom property
+voor de random kleuranimatie.
+========================================================= */
+
 :root {
+  /* Algemene fallback font */
   --font-family: Arial, Helvetica;
-  --first-color: hsl(37, 89%, 67%);
-  --second-color: hsl(31, 57%, 93%);
-  --third-color: hsl(8, 71%, 86%);
-  --fourth-color: hsl(165, 15%, 58%);
-  --fith-color: hsl(75, 73%, 74%);
-  --fackback-hue: 60;
 
-  --button-text: #3E331F;
-  --button-size-text: 3em;
-  --text--sixe: 4em;
-
-  --button_radius: 0.75em;
-  --button-color: #75938b;
-
-  --hue-first-color: 37;
+  /* Hue-waarden voor kleurwissels en thematische variaties */
+  --hue-first-color: 321;
   --hue-second-color: 31;
-  --hue-third-color: 8;
+  --hue-third-color: 113;
   --hue-fourth-color: 165;
   --hue-fifth-color: 75;
   --hue-zes-color: 30;
 
+  /* Basis UI styling */
+  --border: 6px solid black;
 
+  /* Schaalvariabele voor responsive sizing
+     Bron: docentvoorbeeld / les over clamp() en meebewegen met scherm */
+  --unit: clamp(0.75rem, 0.45rem + 1.4vw, 1.25rem);
 }
 
+/* Retro font voor de Windows / pixelachtige uitstraling */
+@font-face {
+  font-family: "Windows95";
+  src: url("/fonts/w95fa.woff2") format("woff2");
+}
 
-
-
+/* Custom property die animeerbaar wordt gemaakt
+   Bron: workshop Nils */
 @property --random {
   syntax: "<number>";
   inherits: true;
   initial-value: 0;
 }
 
+/* Laat de custom property van 0 naar 360 lopen
+   zodat deze gebruikt kan worden voor kleurverandering */
 @keyframes random {
-  from {
-    --random: 0;
-  }
-
-  to {
-    --random: 360;
-  }
+  from { --random: 0; }
+  to { --random: 360; }
 }
 
+
+/* =========================================================
+MARK: 2. PAGINA / GLOBALE LAYOUT
+Algemene body-styling en globale state-logica via :has().
+Hier wordt ook de "special mode" geactiveerd via de header checkbox.
+========================================================= */
 
 body {
   margin: 0;
-  animation: random 2s linear infinite;
-  background: hsl(var(--hue, var(--hue-fifth-color)),
-      73%,
-      74%);
-
   padding: 0;
-  font-family: 'W95FA', 'Microsoft Sans Serif',
+  animation: random 2s linear infinite;
+  background: hsl(var(--hue, var(--hue-third-color)), 33%, 44%);
+  font-family: "Windows95", Arial, sans-serif;
+
+  /* Als de header-checkbox aan staat:
+     - random achtergrondkleur bevriest op huidige stand
+     Bron: workshop Nils / :has() techniek */
+  &:has(header input:checked) {
+    animation-play-state: paused;
+    --hue: var(--random);
+  }
+
+  /* Als header-checkbox aan staat én party-button is geselecteerd:
+     toon confetti op het gezicht */
+  &:has(header input:checked) {
+    main {
+      > section:first-of-type {
+        > input[type="radio"]:nth-child(4):checked
+        ~ section:first-of-type div::after {
+          display: block;
+          animation-name: --confettiFall;
+          animation-duration: 0.6s;
+          animation-iteration-count: infinite;
+          animation-timing-function: steps(6);
+        }
+      }
+    }
+  }
+
+  /* Als header-checkbox aan staat:
+     verander de labels van de moods naar alternatieve namen */
+  &:has(header input:checked) {
+    main > section:first-of-type {
+      > label {
+        font-size: 0;
+      }
+
+      > label:nth-of-type(1)::before {
+        content: "Sleepy";
+        font-size: 1rem;
+      }
+
+      > label:nth-of-type(2)::before {
+        content: "Wild";
+        font-size: 1rem;
+      }
+
+      > label:nth-of-type(3)::before {
+        content: "Cute";
+        font-size: 1rem;
+      }
+
+      > label:nth-of-type(4)::before {
+        content: "Disco";
+        font-size: 1rem;
+      }
+    }
+  }
+
+  /* Als header-checkbox aan staat:
+     geef de vier mood-buttons een extra bewegende animatie */
+  &:has(header input:checked) {
+    main > section:first-of-type {
+      > input[type="radio"] {
+        animation: wiggle .6s ease-in-out infinite;
+      }
+    }
+  }
+
+  /* Speciale overrides voor de moods wanneer de header mode actief is:
+     verdrietig -> sleepy
+     shaken -> wild
+     blij -> cute */
+  &:has(header input:checked) {
+    input[value="verdrietig"]:checked ~ section div::before {
+      animation:
+        --sleep-eyes .4s steps(1) forwards,
+        --sleep-breathe 2.4s steps(2) .4s infinite;
+    }
+
+    input[value="shaken"]:checked ~ section div::before {
+      animation:
+        --wild-face .2s steps(1) forwards,
+        --wild-move .4s steps(2) .2s infinite;
+    }
+
+    input[value="blij"]:checked ~ section div::before {
+      animation:
+        --cute-face .2s steps(1) forwards,
+        --cute-pulse .4s steps(2) .2s infinite;
+    }
+  }
 }
 
-body:has(header input:checked) {
-  animation-play-state: paused;
-  --hue: var(--random);
-  transition: 0.2s all ease-out;
 
+/* =========================================================
+MARK: 3. POWER / CONTAINER STYLE QUERY
+De game-container krijgt een custom property --power.
+Met de power-checkbox wordt die van off naar on gezet.
+Daarna bepaalt een style query of het gezicht zichtbaar is.
+Bron: moderne CSS techniek / style queries
+========================================================= */
+
+main > section:first-of-type {
+  container-type: inline-size;
+  container-name: game;
+  --power: off;
+}
+
+/* Als de power-checkbox aan staat, wordt de status "on" */
+section:has(input[value="power"]:checked) {
+  --power: on;
+}
+
+/* Power aan:
+   scherminhoud zichtbaar en interactief */
+@container game style(--power: on) {
+  section div {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    visibility: visible;
+  }
+}
+
+/* Power uit:
+   scherminhoud verdwijnt visueel, maar behoudt layoutruimte */
+@container game style(--power: off) {
+  section div {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+    pointer-events: none;
+    visibility: hidden;
+  }
 }
 
 
+/* =========================================================
+MARK: 4. INPUTS EN LABELS
+Standaard styling voor knoppen en labels.
+========================================================= */
 
-Header {
-  background: rgb(243, 20, 76);
-
-  width: 90%;
-  rotate: 20deg;
-  position:absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top:80px;
-  left:75%;
-  transform:translateX(-50%);
-  z-index:10;
-
-
-
-  --s: 200px; /* adjust to control the size */
-
-  width: var(--s); 
-  aspect-ratio: 1;
-  --g:/calc(var(--s)*0.214) calc(var(--s)*0.214) radial-gradient(50% 50%,#000 99%,#0000 101%) no-repeat;
-  mask: calc(50% + var(--s)*0.349) calc(50% + var(--s)*0.093) var(--g),calc(50% + var(--s)*0.181) calc(50% + var(--s)*0.312) var(--g),calc(50% + var(--s)*-0.093) calc(50% + var(--s)*0.349) var(--g),calc(50% + var(--s)*-0.312) calc(50% + var(--s)*0.181) var(--g),calc(50% + var(--s)*-0.349) calc(50% + var(--s)*-0.093) var(--g),calc(50% + var(--s)*-0.181) calc(50% + var(--s)*-0.312) var(--g),calc(50% + var(--s)*0.093) calc(50% + var(--s)*-0.349) var(--g),calc(50% + var(--s)*0.312) calc(50% + var(--s)*-0.181) var(--g),radial-gradient(calc(var(--s)*0.421),#000 99%,#0000 101%) subtract,calc(50% + var(--s)*0.395) calc(50% + var(--s)*0.302) var(--g),calc(50% + var(--s)*0.066) calc(50% + var(--s)*0.493) var(--g),calc(50% + var(--s)*-0.302) calc(50% + var(--s)*0.395) var(--g),calc(50% + var(--s)*-0.493) calc(50% + var(--s)*0.066) var(--g),calc(50% + var(--s)*-0.395) calc(50% + var(--s)*-0.302) var(--g),calc(50% + var(--s)*-0.066) calc(50% + var(--s)*-0.493) var(--g),calc(50% + var(--s)*0.302) calc(50% + var(--s)*-0.395) var(--g),calc(50% + var(--s)*0.493) calc(50% + var(--s)*-0.066) var(--g);
-
-}
-
-
-
-
-
-header label{
-  font-family: "Comic Sans MS", "Arial Rounded MT Bold", Arial;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
-  font-weight:bold;
-  
-}
-
-
-
-
-input{
+input {
   appearance: none;
-  width: 60px;
-  height: 60px;
-  background: #d62828;
+  width: calc(var(--unit) * 3);
+  height: calc(var(--unit) * 3);
+  background: #ec3333;
   border-radius: 50%;
-  border: 6px solid #7a0d0d;
+  border: var(--border);
   cursor: pointer;
-
   box-shadow:
     inset 0 -6px 0 #7a0d0d,
     0 4px 0 #3d0707;
-
   transition: transform 0.1s;
+
+  /* Kleine indruk-animatie bij klikken */
+  &:active {
+    transform: translateY(3px);
+  }
 }
 
-input:active{
-  transform: translateY(3px);
- 
+label {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
+
+
+/* =========================================================
+MARK: 5. HEADER / SPECIAL MODE BUTTON
+De header is vormgegeven als opvallende decoratieve knop
+die de alternatieve mode activeert.
+========================================================= */
+
+header {
+  background: rgb(243, 20, 76);
+  width: 90%;
+  rotate: 20deg;
+  position: absolute;
+  top: 80px;
+  left: 80%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 6px solid black;
+
+  /* Grootte van de bloemvorm */
+  --s: 200px;
+  width: var(--s);
+  aspect-ratio: 1;
+
+  /* Mask-opbouw voor de bloemvormige knop
+     Bron: online / CSS shape techniek / experimenteren met masks */
+  --g: /calc(var(--s)*0.214) calc(var(--s)*0.214)
+    radial-gradient(50% 50%, #000 99%, #0000 101%) no-repeat;
+
+  mask:
+    calc(50% + var(--s)*0.349) calc(50% + var(--s)*0.093) var(--g),
+    calc(50% + var(--s)*0.181) calc(50% + var(--s)*0.312) var(--g),
+    calc(50% + var(--s)*-0.093) calc(50% + var(--s)*0.349) var(--g),
+    calc(50% + var(--s)*-0.312) calc(50% + var(--s)*0.181) var(--g),
+    calc(50% + var(--s)*-0.349) calc(50% + var(--s)*-0.093) var(--g),
+    calc(50% + var(--s)*-0.181) calc(50% + var(--s)*-0.312) var(--g),
+    calc(50% + var(--s)*0.093) calc(50% + var(--s)*-0.349) var(--g),
+    calc(50% + var(--s)*0.312) calc(50% + var(--s)*-0.181) var(--g),
+    radial-gradient(calc(var(--s)*0.421), #000 99%, #0000 101%) subtract,
+    calc(50% + var(--s)*0.395) calc(50% + var(--s)*0.302) var(--g),
+    calc(50% + var(--s)*0.066) calc(50% + var(--s)*0.493) var(--g),
+    calc(50% + var(--s)*-0.302) calc(50% + var(--s)*0.395) var(--g),
+    calc(50% + var(--s)*-0.493) calc(50% + var(--s)*0.066) var(--g),
+    calc(50% + var(--s)*-0.395) calc(50% + var(--s)*-0.302) var(--g),
+    calc(50% + var(--s)*-0.066) calc(50% + var(--s)*-0.493) var(--g),
+    calc(50% + var(--s)*0.302) calc(50% + var(--s)*-0.395) var(--g),
+    calc(50% + var(--s)*0.493) calc(50% + var(--s)*-0.066) var(--g);
+
+  /* Tekst en knop in de header */
+  label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+  }
+}
+
+
+/* =========================================================
+MARK: 6. MAIN / PAGINA-INHOUD
+Basis-layout van de pagina en checkbox-styling.
+========================================================= */
 
 main {
   min-height: 50em;
   display: grid;
   place-items: center;
   padding-top: 50px;
-}
 
-/* de body van de tama */
+  h1 {
+    font-weight: bold;
+    font-size: 40px;
+  }
 
-main>section:first-of-type {
-  width: 100%;
-  max-width: 50em;
-  padding: 20px;
-  border-radius: 30px;
-  background: hsl(calc(var(--hue, var(--hue-first-color)) + 20), 89%, 67%);
-
-}
-
-
-
-main>section {
-  width: 60%;
-  box-shadow:
-    inset 2px -6px  10px #464629,
-    0 4px 0 #3d0707;
+  /* Groene powerstatus als checkbox actief is */
+  input[type="checkbox"]:checked {
+    background: #28c840;
+    border-color: #0a5f1a;
+  }
 }
 
 
+/* =========================================================
+MARK: 7. GAME CONTAINER / LAYOUT
+Hier staat de opbouw van de Tamagotchi-behuizing:
+bovenaan de buttons, daaronder labels, en daarna het scherm.
+========================================================= */
 
-main>section>section:nth-of-type(1) {
-  background: var(--fourth-color);
-
-  padding: 5em;
-  margin: 2em;
-
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-}
-
-
-main>section>section:nth-of-type(2) {
+main > section:first-of-type {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  place-items: center;
-  gap: 10px;
-}
-
-
-/*                                   */
-/* Buttons styling en animatie */
-/*                                        */
-
-
-
-main section:nth-of-type(2) input {
-  width: 60px;
-  height: 60px;
-  appearance: none;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  gap: .5em 1em;
+  align-items: center;
+  width: 100%;
+  max-width: 50em;
+  padding: calc(var(--unit) * 1.2);
+  border-radius: 30px;
+  background: hsl(calc(var(--hue, var(--hue-first-color)) + 20), 49%, 67%);
   border: 6px solid black;
-  background: #444;
-  position: relative;
-  cursor: pointer;
+  box-shadow:
+    inset 6px -9px 0px #727214,
+    0 7px 0 #3d0707;
+
+  /* Plaatsing van de vier radiobuttons */
+  > input[type="radio"] {
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  /* Tekstlabels onder de radiobuttons */
+  > label {
+    grid-row: 2;
+    justify-self: center;
+    display: block;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  /* Display / scherm onder de controls */
+  > section:first-of-type {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: .5em;
+  }
+
+  /* Als de tweede radio actief is:
+     laat de hele console kort schudden */
+  &:has(input:nth-child(2):checked) {
+    animation-name: --shake;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: 4;
+  }
+
+  /* Schermvlak waar het gezicht in komt */
+  > section:nth-of-type(1) {
+    background: grey;
+    padding: calc(var(--unit) * 4);
+    margin: 2em;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Eventuele tweede sectie binnen de container */
+  > section:nth-of-type(2) {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    place-items: center;
+    gap: 10px;
+  }
 }
 
- main input[type="checkbox"]:checked{
-  background: #28c840;
-  border-color: #0a5f1a;
-}
 
-main:has(input:nth-last-child(1):checked) section div::before {
-  display: block;  
-
-  animation-name: --wink;
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-  animation-timing-function: steps(5);
-
-}
-
-
-
-
-
-
-label{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
-
-
-
-
-/* Pixel art beeldscherm */
+/* =========================================================
+MARK: 8. PIXEL FACE DISPLAY
+Het gezicht is opgebouwd met box-shadow pixels op ::before.
+Het extra laagje ::after wordt gebruikt voor confetti.
+Bron: workshop / uitleg van Nils over box-shadow pixels
+========================================================= */
 
 section div {
   --p: 20px;
   width: calc(12 * var(--p));
   height: calc(12 * var(--p));
-  margin: 0;
   position: relative;
 
-}
-
-
-
-section div::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--p);
-  height: var(--p);
-  box-shadow:
-    calc(4 * var(--p)) calc(3 * var(--p)) black,
-    calc(4 * var(--p)) calc(2 * var(--p)) black,
-    calc(8 * var(--p)) calc(3 * var(--p)) black,
-    calc(8 * var(--p)) calc(2 * var(--p)) black,
-    calc(3 * var(--p)) calc(8 * var(--p)) black,
-    calc(4 * var(--p)) calc(9 * var(--p)) black,
-    calc(5 * var(--p)) calc(10 * var(--p)) black,
-    calc(6 * var(--p)) calc(10 * var(--p)) black,
-    calc(7 * var(--p)) calc(10 * var(--p)) black,
-    calc(8 * var(--p)) calc(9 * var(--p)) black,
-    calc(9 * var(--p)) calc(8 * var(--p)) black;
-
-   
-  
-  display: none;
-  
-}
-
-section div::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--p);
-  height: var(--p);
-  display: none;
-}
-
-
-
-
-
-@keyframes --wink {
- 
-  100% {
+  /* Basistoestand van het gezicht */
+  &::before {
+    content: "";
+    position: absolute;
+    --p: var(--unit);
+    width: var(--p);
+    height: var(--p);
+    display: block;
     box-shadow:
-    calc(4 * var(--p)) calc(3 * var(--p)) black,
-    calc(4 * var(--p)) calc(2 * var(--p)) black,
-    calc(8 * var(--p)) calc(3 * var(--p)) black,
-    calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
       calc(3 * var(--p)) calc(8 * var(--p)) black,
       calc(4 * var(--p)) calc(9 * var(--p)) black,
       calc(5 * var(--p)) calc(10 * var(--p)) black,
@@ -293,327 +412,503 @@ section div::after {
       calc(7 * var(--p)) calc(10 * var(--p)) black,
       calc(8 * var(--p)) calc(9 * var(--p)) black,
       calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
 
+  /* Extra layer voor confetti-effect */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--p);
+    height: var(--p);
+    display: none;
   }
 }
 
-@keyframes --sad {
-  100% {
-    box-shadow:
-    calc(4 * var(--p)) calc(3 * var(--p)) black,
-    calc(4 * var(--p)) calc(2 * var(--p)) black,
-    calc(8 * var(--p)) calc(3 * var(--p)) black,
-    calc(8 * var(--p)) calc(2 * var(--p)) black,
-      calc(3 * var(--p)) calc(12 * var(--p)) black,
-      calc(4 * var(--p)) calc(11 * var(--p)) black,
-      calc(5 * var(--p)) calc(10 * var(--p)) black,
-      calc(6 * var(--p)) calc(10 * var(--p)) black,
-      calc(7 * var(--p)) calc(10 * var(--p)) black,
-      calc(8 * var(--p)) calc(11 * var(--p)) black,
-      calc(9 * var(--p)) calc(12* var(--p)) black;
-  }
-      
-  }
 
+/* =========================================================
+MARK: 9. RADIO CONTROLS
+Uiterlijk en hover van de mood-buttons.
+========================================================= */
 
-
-
-  @keyframes --mad {
-  
-    100% {
-      box-shadow:
-
-      calc(5 * var(--p)) calc(1 * var(--p)) black,
-      calc(4 * var(--p)) calc(0 * var(--p)) black,
-      calc(3 * var(--p)) calc(-1 * var(--p)) black,
-  
-      calc(7 * var(--p)) calc(1 * var(--p)) black,
-      calc(8 * var(--p)) calc(0 * var(--p)) black,
-      calc(9 * var(--p)) calc(-1 * var(--p)) black,
-  
-          calc(4 * var(--p)) calc(3 * var(--p)) black,
-          calc(8 * var(--p)) calc(3 * var(--p)) black,
-  
-  
-          calc(3 * var(--p)) calc(12 * var(--p)) black,
-          calc(4 * var(--p)) calc(11 * var(--p)) black,
-          calc(5 * var(--p)) calc(10 * var(--p)) black,
-          calc(6 * var(--p)) calc(10 * var(--p)) black,
-          calc(7 * var(--p)) calc(10 * var(--p)) black,
-          calc(8 * var(--p)) calc(11 * var(--p)) black,
-          calc(9 * var(--p)) calc(12 * var(--p)) black;
-    }
-        
-    }
-
-    @keyframes --shake {
-      0%   { transform: translateX(0); }
-      10%  { transform: translateX(-5px); }
-      20%  { transform: translateX(5px); }
-      30%  { transform: translateX(-5px); }
-      40%  { transform: translateX(5px); }
-      50%  { transform: translateX(-5px); }
-      60%  { transform: translateX(5px); }
-      70%  { transform: translateX(-5px); }
-      80%  { transform: translateX(5px); }
-      90%  { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes --party {
-        0% {
-          box-shadow:
-          
-            calc(3 * var(--p)) calc(0 * var(--p)) black,
-            calc(4 * var(--p)) calc(0 * var(--p)) black,
-            calc(5 * var(--p)) calc(0 * var(--p)) black,
-            calc(6 * var(--p)) calc(0 * var(--p)) black,
-            calc(7 * var(--p)) calc(0 * var(--p)) black,
-            calc(8 * var(--p)) calc(0 * var(--p)) black,
-            calc(2 * var(--p)) calc(1 * var(--p)) black,
-            calc(3 * var(--p)) calc(1 * var(--p)) black,
-            calc(4 * var(--p)) calc(1 * var(--p)) black,
-            calc(5 * var(--p)) calc(1 * var(--p)) black,
-            calc(6 * var(--p)) calc(1 * var(--p)) black,
-            calc(7 * var(--p)) calc(1 * var(--p)) black,
-            calc(8 * var(--p)) calc(1 * var(--p)) black,
-            calc(9 * var(--p)) calc(1 * var(--p)) black,
-      
-            calc(4 * var(--p)) calc(3 * var(--p)) black,
-            calc(4 * var(--p)) calc(4 * var(--p)) black,
-            calc(8 * var(--p)) calc(3 * var(--p)) black,
-            calc(8 * var(--p)) calc(4 * var(--p)) black,
-      
-            calc(3 * var(--p)) calc(8 * var(--p)) black,
-            calc(4 * var(--p)) calc(9 * var(--p)) black,
-            calc(5 * var(--p)) calc(10 * var(--p)) black,
-            calc(6 * var(--p)) calc(10 * var(--p)) black,
-            calc(7 * var(--p)) calc(10 * var(--p)) black,
-            calc(8 * var(--p)) calc(9 * var(--p)) black,
-            calc(9 * var(--p)) calc(8 * var(--p)) black;
-        }
-      
-        50% {
-          box-shadow:
-          
-            calc(4 * var(--p)) calc(-1 * var(--p)) black,
-            calc(5 * var(--p)) calc(-1 * var(--p)) black,
-            calc(6 * var(--p)) calc(-1 * var(--p)) black,
-            calc(7 * var(--p)) calc(-1 * var(--p)) black,
-            calc(8 * var(--p)) calc(-1 * var(--p)) black,
-            calc(9 * var(--p)) calc(-1 * var(--p)) black,
-            calc(3 * var(--p)) calc(0 * var(--p)) black,
-            calc(4 * var(--p)) calc(0 * var(--p)) black,
-            calc(5 * var(--p)) calc(0 * var(--p)) black,
-            calc(6 * var(--p)) calc(0 * var(--p)) black,
-            calc(7 * var(--p)) calc(0 * var(--p)) black,
-            calc(8 * var(--p)) calc(0 * var(--p)) black,
-            calc(9 * var(--p)) calc(0 * var(--p)) black,
-            calc(10 * var(--p)) calc(0 * var(--p)) black,
-      
-         
-            calc(4 * var(--p)) calc(4 * var(--p)) black,
-            calc(5 * var(--p)) calc(4 * var(--p)) black,
-            calc(8 * var(--p)) calc(4 * var(--p)) black,
-            calc(9 * var(--p)) calc(4 * var(--p)) black,
-      
-       
-            calc(4 * var(--p)) calc(9 * var(--p)) black,
-            calc(5 * var(--p)) calc(10 * var(--p)) black,
-            calc(6 * var(--p)) calc(10 * var(--p)) black,
-            calc(7 * var(--p)) calc(10 * var(--p)) black,
-            calc(8 * var(--p)) calc(9 * var(--p)) black;
-        }
-      
-        100% {
-          box-shadow:
-            calc(3 * var(--p)) calc(0 * var(--p)) black,
-            calc(4 * var(--p)) calc(0 * var(--p)) black,
-            calc(5 * var(--p)) calc(0 * var(--p)) black,
-            calc(6 * var(--p)) calc(0 * var(--p)) black,
-            calc(7 * var(--p)) calc(0 * var(--p)) black,
-            calc(8 * var(--p)) calc(0 * var(--p)) black,
-            calc(2 * var(--p)) calc(1 * var(--p)) black,
-            calc(3 * var(--p)) calc(1 * var(--p)) black,
-            calc(4 * var(--p)) calc(1 * var(--p)) black,
-            calc(5 * var(--p)) calc(1 * var(--p)) black,
-            calc(6 * var(--p)) calc(1 * var(--p)) black,
-            calc(7 * var(--p)) calc(1 * var(--p)) black,
-            calc(8 * var(--p)) calc(1 * var(--p)) black,
-            calc(9 * var(--p)) calc(1 * var(--p)) black,
-      
-        
-            calc(4 * var(--p)) calc(3 * var(--p)) black,
-            calc(4 * var(--p)) calc(4 * var(--p)) black,
-            calc(8 * var(--p)) calc(3 * var(--p)) black,
-            calc(8 * var(--p)) calc(4 * var(--p)) black,
-      
-        
-            calc(3 * var(--p)) calc(8 * var(--p)) black,
-            calc(4 * var(--p)) calc(9 * var(--p)) black,
-            calc(5 * var(--p)) calc(10 * var(--p)) black,
-            calc(6 * var(--p)) calc(10 * var(--p)) black,
-            calc(7 * var(--p)) calc(10 * var(--p)) black,
-            calc(8 * var(--p)) calc(9 * var(--p)) black,
-            calc(9 * var(--p)) calc(8 * var(--p)) black;
-        }
-      }
-
-
-      @keyframes --confettiFall {
-        0% {
-          box-shadow:
-            calc(1 * var(--p)) calc(0 * var(--p)) red,
-            calc(4 * var(--p)) calc(1 * var(--p)) yellow,
-            calc(7 * var(--p)) calc(0 * var(--p)) blue,
-            calc(10 * var(--p)) calc(1 * var(--p)) lime,
-            calc(3 * var(--p)) calc(2 * var(--p)) hotpink,
-            calc(8 * var(--p)) calc(2 * var(--p)) orange;
-        }
-      
-      
-        100% {
-          box-shadow:
-            calc(1 * var(--p)) calc(8 * var(--p)) red,
-            calc(4 * var(--p)) calc(9 * var(--p)) yellow,
-            calc(7 * var(--p)) calc(8 * var(--p)) blue,
-            calc(10 * var(--p)) calc(9 * var(--p)) lime,
-            calc(3 * var(--p)) calc(10 * var(--p)) hotpink,
-            calc(8 * var(--p)) calc(10 * var(--p)) orange;
-        }
-      }
-/* radio buttons  */
-
-main:not(:has(input[type="checkbox"]:checked)) section div::before,
-main:not(:has(input[type="checkbox"]:checked)) section div::after {
-  display: none;
-}
-
-
-section input[type="radio"]{
+section input[type="radio"] {
   appearance: none;
-  width: 60px;
-  height: 60px;
-  background: hsl(calc(var(--hue, var(--hue-fourth-color)) + 20), 89%, 67%);
-  border: 4px solid black;
-  border-radius: 50%;
+  background: hsl(calc(var(--hue, var(--hue-fourth-color)) + 5), 39%, 37%);
   cursor: pointer;
 }
 
-
-section input[type="radio"]:hover{
-  appearance: none;
-  scale:1.1;
-  background: hsl(calc(var(--hue, var(--hue-fourth-color)) + 90), 89%, 67%);
-  border-radius: 50%;
-  cursor: pointer;
+section input[type="radio"]:hover {
+  scale: 1.1;
+  background: hsl(calc(var(--hue, var(--hue-third-color)) + 90), 59%, 67%);
   transition: 0.1s all ease-in;
 }
 
-section input:nth-child(1)[type="radio"]:checked ~ section div::before{
+
+/* =========================================================
+MARK: 10. MOOD STATES
+Standaard moods als de speciale header-modus niet actief is.
+========================================================= */
+
+input[value="verdrietig"]:checked ~ section div::before {
   animation-name: --sad;
   animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(5);
 }
 
-main > section:first-of-type:has(input:nth-child(2):checked) {
-  animation: --shake 0.3s linear 5;
-}
-
-
-section input:nth-child(2)[type="radio"]:checked ~ section div::before{
-
+input[value="shaken"]:checked ~ section div::before {
   animation-name: --mad;
   animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(1);
 }
 
-section input:nth-child(3)[type="radio"]:checked ~ section div::before{
+input[value="blij"]:checked ~ section div::before {
   animation-name: --wink;
-  animation-duration: 1s;
+  animation-duration: 0.8s;
   animation-fill-mode: forwards;
   animation-timing-function: steps(3);
 }
 
-main > section:first-of-type > input:nth-child(4):checked 
-~ section:first-of-type div::before {
-
+input[value="party"]:checked ~ section div::before {
   animation-name: --party;
-  animation-duration: 0.6s;
+  animation-duration: 0.4s;
   animation-iteration-count: infinite;
   animation-timing-function: steps(1);
 }
 
-body:has(header input:checked)
-main > section:first-of-type > input[type="radio"]:nth-child(4):checked
-~ section:first-of-type div::after {
-  display: block;
-  animation-name: --confettiFall ;
-  animation-duration: 0.6s;
-  animation-iteration-count: infinite;
-  animation-timing-function: steps(6);
+
+/* =========================================================
+MARK: 11. ANIMATIONS
+Alle keyframes voor de verschillende moods en effecten.
+========================================================= */
+
+/* Blij / springend gezicht
+   Bron: workshop / box-shadow animatie techniek */
+@keyframes --wink {
+  0% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+
+  25% {
+    box-shadow:
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(4 * var(--p)) calc(1 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(1 * var(--p)) black,
+      calc(3 * var(--p)) calc(7 * var(--p)) black,
+      calc(4 * var(--p)) calc(8 * var(--p)) black,
+      calc(5 * var(--p)) calc(9 * var(--p)) black,
+      calc(6 * var(--p)) calc(9 * var(--p)) black,
+      calc(7 * var(--p)) calc(9 * var(--p)) black,
+      calc(8 * var(--p)) calc(8 * var(--p)) black,
+      calc(9 * var(--p)) calc(7 * var(--p)) black;
+  }
+
+  50% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+
+  75% {
+    box-shadow:
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(4 * var(--p)) calc(1 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(1 * var(--p)) black,
+      calc(3 * var(--p)) calc(7 * var(--p)) black,
+      calc(4 * var(--p)) calc(8 * var(--p)) black,
+      calc(5 * var(--p)) calc(9 * var(--p)) black,
+      calc(6 * var(--p)) calc(9 * var(--p)) black,
+      calc(7 * var(--p)) calc(9 * var(--p)) black,
+      calc(8 * var(--p)) calc(8 * var(--p)) black,
+      calc(9 * var(--p)) calc(7 * var(--p)) black;
+  }
+
+  100% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+}
+
+/* Verdrietig gezicht: mondhoeken omlaag */
+@keyframes --sad {
+  100% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(12 * var(--p)) black,
+      calc(4 * var(--p)) calc(11 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(11 * var(--p)) black,
+      calc(9 * var(--p)) calc(12 * var(--p)) black;
+  }
+}
+
+/* Boos / schuin wenkbrauwachtig gezicht */
+@keyframes --mad {
+  100% {
+    box-shadow:
+      calc(5 * var(--p)) calc(1 * var(--p)) black,
+      calc(4 * var(--p)) calc(0 * var(--p)) black,
+      calc(3 * var(--p)) calc(-1 * var(--p)) black,
+      calc(7 * var(--p)) calc(1 * var(--p)) black,
+      calc(8 * var(--p)) calc(0 * var(--p)) black,
+      calc(9 * var(--p)) calc(-1 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(3 * var(--p)) calc(12 * var(--p)) black,
+      calc(4 * var(--p)) calc(11 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(11 * var(--p)) black,
+      calc(9 * var(--p)) calc(12 * var(--p)) black;
+  }
+}
+
+/* Schud-animatie van de hele console */
+@keyframes --shake {
+  0%   { transform: translateX(-5px) rotate(-3deg); }
+  50%  { transform: translateX(5px) rotate(3deg); }
+  100% { transform: translateX(-5px) rotate(-3deg); }
+}
+
+/* Party-gezicht */
+@keyframes --party {
+  0% {
+    box-shadow:
+      calc(3 * var(--p)) calc(0 * var(--p)) black,
+      calc(4 * var(--p)) calc(0 * var(--p)) black,
+      calc(5 * var(--p)) calc(0 * var(--p)) black,
+      calc(6 * var(--p)) calc(0 * var(--p)) black,
+      calc(7 * var(--p)) calc(0 * var(--p)) black,
+      calc(8 * var(--p)) calc(0 * var(--p)) black,
+      calc(2 * var(--p)) calc(1 * var(--p)) black,
+      calc(3 * var(--p)) calc(1 * var(--p)) black,
+      calc(4 * var(--p)) calc(1 * var(--p)) black,
+      calc(5 * var(--p)) calc(1 * var(--p)) black,
+      calc(6 * var(--p)) calc(1 * var(--p)) black,
+      calc(7 * var(--p)) calc(1 * var(--p)) black,
+      calc(8 * var(--p)) calc(1 * var(--p)) black,
+      calc(9 * var(--p)) calc(1 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(4 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(4 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+
+  50% {
+    box-shadow:
+      calc(4 * var(--p)) calc(-1 * var(--p)) black,
+      calc(5 * var(--p)) calc(-1 * var(--p)) black,
+      calc(6 * var(--p)) calc(-1 * var(--p)) black,
+      calc(7 * var(--p)) calc(-1 * var(--p)) black,
+      calc(8 * var(--p)) calc(-1 * var(--p)) black,
+      calc(9 * var(--p)) calc(-1 * var(--p)) black,
+      calc(3 * var(--p)) calc(0 * var(--p)) black,
+      calc(4 * var(--p)) calc(0 * var(--p)) black,
+      calc(5 * var(--p)) calc(0 * var(--p)) black,
+      calc(6 * var(--p)) calc(0 * var(--p)) black,
+      calc(7 * var(--p)) calc(0 * var(--p)) black,
+      calc(8 * var(--p)) calc(0 * var(--p)) black,
+      calc(9 * var(--p)) calc(0 * var(--p)) black,
+      calc(10 * var(--p)) calc(0 * var(--p)) black,
+      calc(4 * var(--p)) calc(4 * var(--p)) black,
+      calc(5 * var(--p)) calc(4 * var(--p)) black,
+      calc(8 * var(--p)) calc(4 * var(--p)) black,
+      calc(9 * var(--p)) calc(4 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black;
+  }
+
+  100% {
+    box-shadow:
+      calc(3 * var(--p)) calc(0 * var(--p)) black,
+      calc(4 * var(--p)) calc(0 * var(--p)) black,
+      calc(5 * var(--p)) calc(0 * var(--p)) black,
+      calc(6 * var(--p)) calc(0 * var(--p)) black,
+      calc(7 * var(--p)) calc(0 * var(--p)) black,
+      calc(8 * var(--p)) calc(0 * var(--p)) black,
+      calc(2 * var(--p)) calc(1 * var(--p)) black,
+      calc(3 * var(--p)) calc(1 * var(--p)) black,
+      calc(4 * var(--p)) calc(1 * var(--p)) black,
+      calc(5 * var(--p)) calc(1 * var(--p)) black,
+      calc(6 * var(--p)) calc(1 * var(--p)) black,
+      calc(7 * var(--p)) calc(1 * var(--p)) black,
+      calc(8 * var(--p)) calc(1 * var(--p)) black,
+      calc(9 * var(--p)) calc(1 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(4 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(4 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+}
+
+/* Confetti-effect bij disco */
+@keyframes --confettiFall {
+  0% {
+    box-shadow:
+      calc(1 * var(--p)) calc(0 * var(--p)) red,
+      calc(4 * var(--p)) calc(1 * var(--p)) yellow,
+      calc(7 * var(--p)) calc(0 * var(--p)) blue,
+      calc(10 * var(--p)) calc(1 * var(--p)) lime,
+      calc(3 * var(--p)) calc(2 * var(--p)) hotpink,
+      calc(8 * var(--p)) calc(2 * var(--p)) orange;
+  }
+
+  100% {
+    box-shadow:
+      calc(1 * var(--p)) calc(8 * var(--p)) red,
+      calc(4 * var(--p)) calc(9 * var(--p)) yellow,
+      calc(7 * var(--p)) calc(8 * var(--p)) blue,
+      calc(10 * var(--p)) calc(9 * var(--p)) lime,
+      calc(3 * var(--p)) calc(10 * var(--p)) hotpink,
+      calc(8 * var(--p)) calc(10 * var(--p)) orange;
+  }
+}
+
+/* Algemene knop-wobble in special mode */
+@keyframes wiggle {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-6deg) scale(1.05); }
+  50% { transform: rotate(6deg) scale(1.08); }
+  75% { transform: rotate(-4deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* Sleepy: ogen sluiten */
+@keyframes --sleep-eyes {
+  0% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+
+  100% {
+    box-shadow:
+      calc(3 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(5 * var(--p)) calc(3 * var(--p)) black,
+      calc(7 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(9 * var(--p)) calc(3 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+}
+
+/* Sleepy: rustige ademhaling / zweefbeweging */
+@keyframes --sleep-breathe {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Wild: tong-gezicht */
+@keyframes --wild-face {
+  100% {
+    box-shadow:
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+
+      calc(5 * var(--p)) calc(9 * var(--p)) hotpink,
+      calc(5 * var(--p)) calc(10 * var(--p)) hotpink,
+      calc(5 * var(--p)) calc(11 * var(--p)) hotpink,
+      calc(5 * var(--p)) calc(12 * var(--p)) hotpink,
+      calc(6 * var(--p)) calc(10 * var(--p)) hotpink,
+      calc(6 * var(--p)) calc(11 * var(--p)) hotpink,
+      calc(6 * var(--p)) calc(12 * var(--p)) hotpink,
+
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+}
+
+/* Wild: heen-en-weer beweging */
+@keyframes --wild-move {
+  0%   { transform: rotate(-6deg) translateX(-4px); }
+  50%  { transform: rotate(6deg) translateX(4px); }
+  100% { transform: rotate(-6deg) translateX(-4px); }
+}
+
+/* Cute: schattige sogen */
+@keyframes --cute-face {
+  0% {
+    box-shadow:
+      calc(4 * var(--p)) calc(3 * var(--p)) black,
+      calc(4 * var(--p)) calc(2 * var(--p)) black,
+      calc(8 * var(--p)) calc(3 * var(--p)) black,
+      calc(8 * var(--p)) calc(2 * var(--p)) black,
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+
+  100% {
+    box-shadow:
+      calc(3 * var(--p)) calc(2 * var(--p)) hotpink,
+      calc(4 * var(--p)) calc(1 * var(--p)) hotpink,
+      calc(5 * var(--p)) calc(2 * var(--p)) hotpink,
+
+      calc(7 * var(--p)) calc(2 * var(--p)) hotpink,
+      calc(8 * var(--p)) calc(1 * var(--p)) hotpink,
+      calc(9 * var(--p)) calc(2 * var(--p)) hotpink,
+
+      calc(3 * var(--p)) calc(8 * var(--p)) black,
+      calc(4 * var(--p)) calc(9 * var(--p)) black,
+      calc(5 * var(--p)) calc(10 * var(--p)) black,
+      calc(6 * var(--p)) calc(10 * var(--p)) black,
+      calc(7 * var(--p)) calc(10 * var(--p)) black,
+      calc(8 * var(--p)) calc(9 * var(--p)) black,
+      calc(9 * var(--p)) calc(8 * var(--p)) black;
+  }
+}
+
+/* Cute: zacht pulseren */
+@keyframes --cute-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 
+/* =========================================================
+MARK: 12. RESPONSIVE
+Aanpassingen voor kleinere schermen.
+Bron: uitleg docent over responsive schalen en breakpoints
+========================================================= */
 
+/* Tussenmaat: header schuift verder naar rechts en iets kleiner */
+@media (max-width: 1100px) {
+  header {
+    top: 80px;
+    left: 87%;
+    transform: translateX(-50%) scale(.9);
+  }
+}
+
+/* Mobiel: header wordt onderdeel van de flow en layout schaalt terug */
 @media (max-width: 700px) {
-
   header {
     position: static;
-    justify-content: center;
-    border: none;
-    background: none;
-    rotate: none;
+    top: auto;
+    left: auto;
+    transform: none;
+    rotate: 0deg;
+    margin-bottom: 1rem;
   }
 
-  header input{
-    display: flex;
-    justify-items: center;
-  }
-
-  main{
+  main {
     min-height: 100vh;
-    padding: 1em;
-    align-content:start;
+    padding: 1rem;
+    align-content: start;
   }
 
-  main > section{
-    width:100%;
+  main > section:first-of-type {
+    width: 100%;
+    max-width: 100%;
+    gap: .5rem;
+    padding: 1rem;
   }
 
-  main > section:first-of-type{
-    max-width:100%;
-    padding:16px;
-    border-radius:24px;
-    border-width:2em;
+  main > section:first-of-type > section:first-of-type {
+    padding: 2rem;
+    margin: 1rem 0;
   }
 
-  main > section > section:nth-of-type(1){
-    padding:2em;
-    margin:1em;
+  section input[type="radio"] {
+    width: 48px;
+    height: 48px;
   }
 
-  /* radio buttons rij */
-  main > section > section:nth-of-type(2){
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
+  section div {
+    --p: 12px;
   }
-
-  section input[type="radio"]{
-    width:48px;
-    height:48px;
-  }
-
-  main section:nth-of-type(2) input{
-    width:48px;
-    height:48px;
-  }
-
-  /* pixel grootte kleiner */
-  section div{
-    --p:12px;
-  }
-
 }

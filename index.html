@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="images/icon_pix.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/styles/style.css" rel="stylesheet">
     <title>Document</title>
@@ -14,36 +15,36 @@
         <header>
             <label>
                 push here
-                <input type="checkbox">
+                <input type="checkbox" value="kleur">
             </label>
         </header>
 
+        <h1>Pocket Pixel Friend</h1>
+        <p>
+            Voor deze opdracht heb ik een interactieve Tamagotchi gemaakt met HTML en CSS.
+        </p>
+
         <section>
             
-            <!-- knoppen -->
-
-            <input type="radio" name="keuze">
-            <input type="radio" name="keuze">
-            <input type="radio" name="keuze">
-            <input type="radio" name="keuze">
-    
-            <!-- display -->
-            <section>
-                <div></div>
-            </section>
-
-
-
-
-
-            <!-- power + volume -->
-            
-                
-                    <input type="checkbox" checked>
-    
-
+            <input id="sad" type="radio" name="keuze" value="verdrietig">
+            <input id="angry" type="radio" name="keuze" value="shaken">
+            <input id="happy" type="radio" name="keuze" value="blij">
+            <input id="party" type="radio" name="keuze" value="party">
           
-        </section>
+            
+            <label for="sad">Sad</label>
+            <label for="angry">Angry</label>
+            <label for="happy">Happy</label>
+            <label for="party">Party</label>
+          
+            
+            <section>
+              <div></div>
+            </section>
+          
+            
+            <input type="checkbox" value="power" checked>
+          </section>
     </main>
 </body>
 
